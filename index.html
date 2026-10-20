@@ -974,27 +974,30 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
 </div>
 
 <script type="text/javascript">
-    var usernameInput = $('input[name="username"]')
-    emailInput = $('input[name="email"]')
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof jQuery === 'undefined') return
+        var usernameInput = $('input[name="username"]')
+        emailInput = $('input[name="email"]')
 
-    usernameInput.on('input', function () {
-        $.cookie('username', $(this).val(), { expires: 7, path: '/' })
+        usernameInput.on('input', function () {
+            $.cookie('username', $(this).val(), { expires: 7, path: '/' })
+        })
+
+        emailInput.on('input', function () {
+            $.cookie('email', $(this).val(), { expires: 7, path: '/' })
+        })
+
+        var username = $.cookie('username')
+        email = $.cookie('email')
+
+        if (username) {
+            usernameInput.val(username)
+        }
+
+        if (email) {
+            emailInput.val(email)
+        }
     })
-
-    emailInput.on('input', function () {
-        $.cookie('email', $(this).val(), { expires: 7, path: '/' })
-    })
-
-    var username = $.cookie('username')
-    email = $.cookie('email')
-
-    if (username) {
-        usernameInput.val(username)
-    }
-
-    if (email) {
-        emailInput.val(email)
-    }
 </script>
 
 <script>
