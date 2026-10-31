@@ -17,6 +17,13 @@
     var CURRENCY_MIN = 1;
     var CURRENCY_MAX = 1000000000;
 
+    Object.keys(PRODUCTS).forEach(function (id) {
+        var p = PRODUCTS[id];
+        p.command = p.currency
+            ? 'eco give {user} {amount}'
+            : 'donate set {user} ' + p.name.toLowerCase();
+    });
+
     var cart = {};
 
     function fmt(n) {
@@ -212,67 +219,6 @@
 
     var BUY_MODAL_ID = 'modal-buy';
 
-    function showBuyError(msg) {
-        var box = document.getElementById('buy-error');
-        var text = document.getElementById('buy-error-text');
-        if (text) text.textContent = msg;
-        if (box) box.classList.remove('d-none');
-    }
-
-    function hideBuyError() {
-        var box = document.getElementById('buy-error');
-        if (box) box.classList.add('d-none');
-    }
-
-    function resetBuyModal() {
-        var form = document.getElementById('buy-form');
-        var done = document.getElementById('buy-done');
-        var btn = document.getElementById('buy-submit');
-        var title = document.querySelector('#modal-buy .modal-title');
-        if (form) form.classList.remove('d-none');
-        if (done) done.classList.add('d-none');
-        if (title) title.textContent = '\u041e\u0444\u043e\u0440\u043c\u043b\u0435\u043d\u0438\u0435 \u0437\u0430\u043a\u0430\u0437\u0430';
-        if (btn) {
-            btn.removeAttribute('data-done');
-            var txt = btn.querySelector('.btn-inner-text');
-            if (txt) txt.textContent = '\u041a\u0443\u043f\u0438\u0442\u044c';
-        }
-        hideBuyError();
-    }
-
-    function showBuyDone(nick, promo) {
-        var form = document.getElementById('buy-form');
-        var done = document.getElementById('buy-done');
-        var btn = document.getElementById('buy-submit');
-        var title = document.querySelector('#modal-buy .modal-title');
-        if (!done) return;
-
-        var sumEl = document.getElementById('buy-done-sum');
-        var nickEl = document.getElementById('buy-done-nick');
-        var promoRow = document.getElementById('buy-done-promo-row');
-        var promoEl = document.getElementById('buy-done-promo');
-
-        if (sumEl) sumEl.textContent = fmt(total());
-        if (nickEl) nickEl.textContent = nick;
-        if (promoRow && promoEl) {
-            if (promo) {
-                promoEl.textContent = promo;
-                promoRow.classList.remove('d-none');
-            } else {
-                promoRow.classList.add('d-none');
-            }
-        }
-
-        if (form) form.classList.add('d-none');
-        done.classList.remove('d-none');
-        if (title) title.textContent = '\u0417\u0430\u043a\u0430\u0437 \u043e\u0444\u043e\u0440\u043c\u043b\u0435\u043d';
-        if (btn) {
-            btn.setAttribute('data-done', '1');
-            var txt = btn.querySelector('.btn-inner-text');
-            if (txt) txt.textContent = '\u0413\u043e\u0442\u043e\u0432\u043e';
-        }
-    }
-
     function closeBuyModal() {
         var buy = document.getElementById(BUY_MODAL_ID);
         if (!buy) return;
@@ -286,21 +232,12 @@
             document.body.classList.remove('modal-open');
             document.body.style.overflow = '';
         }
-        resetBuyModal();
     }
 
     function showBuyModal() {
         var buy = document.getElementById(BUY_MODAL_ID);
         var cartEl = document.getElementById('cart');
         if (!buy) return;
-        resetBuyModal();
-
-        var nick = document.getElementById('buy-username');
-        if (nick) {
-            try {
-                nick.value = nick.value || localStorage.getItem('wardex-nick') || '';
-            } catch (err) { /* storage disabled */ }
-        }
 
         if (window.jQuery && cartEl) {
             var $ = window.jQuery;
@@ -325,31 +262,6 @@
         }
     }
 
-    function submitBuy() {
-        var nickEl = document.getElementById('buy-username');
-        var promoEl = document.getElementById('buy-promo');
-        var nick = nickEl ? nickEl.value.trim() : '';
-        var promo = promoEl ? promoEl.value.trim() : '';
-
-        if (!Object.keys(cart).length) {
-            showBuyError('\u041a\u043e\u0440\u0437\u0438\u043d\u0430 \u043f\u0443\u0441\u0442\u0430 \u2014 \u0434\u043e\u0431\u0430\u0432\u044c\u0442\u0435 \u0442\u043e\u0432\u0430\u0440');
-            return;
-        }
-        if (!nick) {
-            showBuyError('\u0423\u043a\u0430\u0436\u0438\u0442\u0435 \u0432\u0430\u0448 \u043d\u0438\u043a');
-            if (nickEl) nickEl.focus();
-            return;
-        }
-
-        hideBuyError();
-        try {
-            localStorage.setItem('wardex-nick', nick);
-            localStorage.setItem('wardex-promo', promo);
-        } catch (err) { /* storage disabled */ }
-
-        showBuyDone(nick, promo);
-    }
-
     document.addEventListener('click', function (e) {
         var buyBtn = e.target.closest('#cart-form button[onclick*="onBuy"], #cart button[onclick*="onBuy"]');
         if (buyBtn) {
@@ -358,17 +270,11 @@
             showBuyModal();
             return;
         }
-        var buySubmit = e.target.closest('#buy-submit');
-        if (buySubmit) {
+        var buyClose = e.target.closest('#buy-close, #modal-buy [data-dismiss="modal"]');
+        if (buyClose) {
             e.preventDefault();
             e.stopPropagation();
-            if (buySubmit.getAttribute('data-done') === '1') {
-                closeBuyModal();
-                cart = {};
-                render();
-            } else {
-                submitBuy();
-            }
+            closeBuyModal();
             return;
         }
         var addBtn = e.target.closest('[data-request="onAdd"]');
@@ -390,20 +296,42 @@
         }
     }, true);
 
-    document.addEventListener('keydown', function (e) {
-        if (e.key !== 'Enter') return;
-        if (!e.target || !e.target.closest || !e.target.closest('#modal-buy')) return;
-        e.preventDefault();
-        submitBuy();
-    });
-
-    document.addEventListener('input', function (e) {
-        if (e.target && e.target.closest && e.target.closest('#modal-buy')) hideBuyError();
-    });
-
     document.addEventListener('DOMContentLoaded', function () {
         render();
     });
 
-    window.__cart = { add: addToCart, render: render, data: function () { return cart; }, total: total };
+    window.__cart = {
+        add: addToCart,
+        render: render,
+        data: function () { return cart; },
+        total: total,
+        items: function () {
+            return Object.keys(cart).map(function (id) {
+                var item = cart[id];
+                var p = PRODUCTS[id] || {};
+                return {
+                    id: id,
+                    name: p.name || '',
+                    quantity: p.currency ? item.amount : item.qty,
+                    amount: p.currency ? item.amount : null,
+                    sum: p.currency ? item.sum : null,
+                    command: p.command || ''
+                };
+            });
+        },
+        commandFor: function (id, user, amount) {
+            var p = PRODUCTS[id];
+            if (!p) return '';
+            return p.command
+                .replace('{user}', user || '{user}')
+                .replace('{amount}', amount == null ? '{amount}' : amount);
+        },
+        commands: function () {
+            var map = {};
+            Object.keys(PRODUCTS).forEach(function (id) {
+                map[PRODUCTS[id].name] = PRODUCTS[id].command;
+            });
+            return map;
+        }
+    };
 })();
