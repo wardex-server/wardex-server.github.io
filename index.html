@@ -1521,6 +1521,63 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
 </div>
 
 
+<div class="modal fade" id="modal-buy" tabindex="-1" role="dialog" aria-labelledby="modal-buy" aria-hidden="true" style="z-index: 10060">
+    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+        <div class="modal-content bg-elegant">
+            <div class="modal-header bg-elegant-night border-0">
+                <h6 class="modal-title text-white mb-0">Оформление заказа</h6>
+                <button style="padding: 0.95rem" type="button" class="close ml-auto" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" class="text-white">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-white">
+                <p class="font-weight-bolder mb-3">Для покупки товара заполните форму.</p>
+                <div class="form-group">
+                    <label class="small mb-1 text-muted" for="buy-username">Ваш ник</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text border-0 bg-elegant-dark text-dark">
+                                <i class="fas fa-user"></i>
+                            </span>
+                        </div>
+                        <input class="form-control border-0 bg-elegant-dark pl-2" id="buy-username" placeholder="Ник на сервере" type="text" name="username" autocomplete="off">
+                    </div>
+                </div>
+                <div class="form-group mb-0">
+                    <label class="small mb-1 text-muted" for="buy-promo">Промокод</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text border-0 bg-elegant-dark text-dark">
+                                <i class="fas fa-tag"></i>
+                            </span>
+                        </div>
+                        <input class="form-control border-0 bg-elegant-dark pl-2" id="buy-promo" placeholder="Промокод" type="text" name="promo" autocomplete="off">
+                    </div>
+                </div>
+                <div class="alert-warning p-2 mt-3 mb-0 d-none" id="buy-error">
+                    <span class="alert-inner--icon"><i class="fas fa-exclamation-circle"></i></span>
+                    <span class="alert-inner--text" id="buy-error-text">Укажите ваш ник</span>
+                </div>
+                <div class="d-flex align-items-end justify-content-between mt-4 pt-3" style="border-top: 2px dashed #f4f4f4">
+                    <div class="text-uppercase">
+                        <small class="font-weight-bolder d-block">Итого:</small>
+                    </div>
+                    <h3 class="mb-0 font-weight-bolder">
+                        <span class="cart-cost">0.00</span><i class="fas fa-ruble-sign ml-2"></i>
+                    </h3>
+                </div>
+            </div>
+            <div class="modal-footer bg-elegant-night border-0 d-block">
+                <button type="button" class="btn btn-block text-white btn-danger animate-up-2" id="buy-submit">
+                    <span class="btn-inner-icon"><i class="fas fa-shopping-cart"></i></span>
+                    <span class="btn-inner-text">Купить</span>
+                </button>
+                <p class="mb-0 small text-muted text-center mt-2">Оплата проходит на официальном магазине EasyDonate</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript">
     (function () {
         function openProduct(id) {
