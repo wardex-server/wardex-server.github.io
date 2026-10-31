@@ -731,57 +731,11 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
                                         Некоторые товары (например блоки) могут быть выданы только в том случае, если Вы находитесь на сервере.
                                     </span>
                                 </div>
-                                <p class="font-weight-bolder">Для покупки товара заполните форму.</p>
+                                <p class="font-weight-bolder">Данные для выдачи укажете в следующем окне.</p>
                             </div>
 
-                                                            <div class="col-12">
-                                    <div class="form-row" id="cart-fields">
-                                        <div class="form-group col-12">
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text border-0 bg-elegant-dark text-dark">
-                                                        <i class="fas fa-user"></i>
-                                                    </span>
-                                                </div>
-                                                <input class="form-control border-0 bg-elegant-dark pl-2" placeholder="Ник на сервере" type="text" name="username" value="" data-request="onTypeUsername" data-request-update="cart_products: '.cart-products', cart_cost: '.cart-cost', shop: '.shop', more_products: '.more-products'" data-track-input="" required="">
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group email col-12">
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text border-0 bg-elegant-dark text-dark">
-                                                        <i class="fas fa-at"></i>
-                                                    </span>
-                                                </div>
-                                                <input class="form-control border-0 bg-elegant-dark pl-2" placeholder="Ваш Email" type="email" name="email" value="" required="">
-                                            </div>
-                                        </div>
-
-                                                                            </div>
-
-                                    <div class="form-group col-12">
-                                        <div class="form-check mb-3">
-                                            <label class="form-check-label">
-                                                <input class="form-check-input" type="checkbox" name="accept" value="1" required="">
-                                                <span class="form-check-sign"></span>
-                                                Я принимаю условия <a href="https://legal.easyx.ru/general/rules" target="_blank" class="text-danger">пользовательского соглашения</a>
-                                                и <a href="https://legal.easyx.ru/easydonate/terms-of-service" target="_blank" class="text-danger">оказания услуг</a>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group col-12 mb-0">
-                                        <div class="form-check mb-3">
-                                            <label class="form-check-label">
-                                                <input class="form-check-input" type="checkbox" name="security_accept" value="1" required="">
-                                                <span class="form-check-sign"></span>
-                                                Я подтверждаю, что банковская карта принадлежит мне
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between md-md-0 mb-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between md-md-0 mb-4">
                                         <button type="button" class="btn text-white btn-danger" onclick="onBuy('securepay', 'securepay')">
                                             Купить
                                         </button>
@@ -1531,6 +1485,7 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
                 </button>
             </div>
             <div class="modal-body text-white">
+                <div id="buy-form">
                 <p class="font-weight-bolder mb-3">Для покупки товара заполните форму.</p>
                 <div class="form-group">
                     <label class="small mb-1 text-muted" for="buy-username">Ваш ник</label>
@@ -1566,13 +1521,22 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
                         <span class="cart-cost">0.00</span><i class="fas fa-ruble-sign ml-2"></i>
                     </h3>
                 </div>
+                </div>
+                <div class="text-center d-none" id="buy-done">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <h5 class="font-weight-bolder mb-3">Заказ оформлен</h5>
+                    <p class="mb-1 small">Ник: <span class="font-weight-bolder" id="buy-done-nick"></span></p>
+                    <p class="mb-1 small d-none" id="buy-done-promo-row">Промокод: <span class="font-weight-bolder" id="buy-done-promo"></span></p>
+                    <p class="mb-1 small">Сумма: <span class="font-weight-bolder" id="buy-done-sum">0.00</span><i class="fas fa-ruble-sign ml-1"></i></p>
+                    <p class="mb-0 mt-2 small text-muted">Демо-режим: реальная оплата не подключена.</p>
+                </div>
             </div>
             <div class="modal-footer bg-elegant-night border-0 d-block">
                 <button type="button" class="btn btn-block text-white btn-danger animate-up-2" id="buy-submit">
                     <span class="btn-inner-icon"><i class="fas fa-shopping-cart"></i></span>
                     <span class="btn-inner-text">Купить</span>
                 </button>
-                <p class="mb-0 small text-muted text-center mt-2">Оплата проходит на официальном магазине EasyDonate</p>
+                <p class="mb-0 small text-muted text-center mt-2">Ник нужен для выдачи товара на сервере</p>
             </div>
         </div>
     </div>
