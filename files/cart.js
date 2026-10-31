@@ -191,7 +191,92 @@
         }
     }
 
+    var BUY_MODAL_ID = 'modal-buy';
+    var STORE_URL = 'https://wardex-server.easydonate.ru/';
+
+    function showBuyError(msg) {
+        var box = document.getElementById('buy-error');
+        var text = document.getElementById('buy-error-text');
+        if (text) text.textContent = msg;
+        if (box) box.classList.remove('d-none');
+    }
+
+    function hideBuyError() {
+        var box = document.getElementById('buy-error');
+        if (box) box.classList.add('d-none');
+    }
+
+    function showBuyModal() {
+        var buy = document.getElementById(BUY_MODAL_ID);
+        var cartEl = document.getElementById('cart');
+        if (!buy) return;
+        hideBuyError();
+
+        var nick = document.getElementById('buy-username');
+        if (nick) {
+            try {
+                nick.value = nick.value || localStorage.getItem('wardex-nick') || '';
+            } catch (err) { /* storage disabled */ }
+        }
+
+        if (window.jQuery && cartEl) {
+            window.jQuery(cartEl).one('hidden.bs.modal', function () {
+                window.jQuery(buy).modal('show');
+            });
+            window.jQuery(cartEl).modal('hide');
+        } else {
+            if (cartEl) {
+                cartEl.classList.remove('show');
+                cartEl.style.display = 'none';
+                cartEl.setAttribute('aria-hidden', 'true');
+            }
+            buy.classList.add('show');
+            buy.style.display = 'block';
+            buy.removeAttribute('aria-hidden');
+            document.body.classList.add('modal-open');
+        }
+    }
+
+    function submitBuy() {
+        var nickEl = document.getElementById('buy-username');
+        var promoEl = document.getElementById('buy-promo');
+        var nick = nickEl ? nickEl.value.trim() : '';
+        var promo = promoEl ? promoEl.value.trim() : '';
+
+        if (!Object.keys(cart).length) {
+            showBuyError('\u041a\u043e\u0440\u0437\u0438\u043d\u0430 \u043f\u0443\u0441\u0442\u0430 \u2014 \u0434\u043e\u0431\u0430\u0432\u044c\u0442\u0435 \u0442\u043e\u0432\u0430\u0440');
+            return;
+        }
+        if (!nick) {
+            showBuyError('\u0423\u043a\u0430\u0436\u0438\u0442\u0435 \u0432\u0430\u0448 \u043d\u0438\u043a');
+            if (nickEl) nickEl.focus();
+            return;
+        }
+
+        hideBuyError();
+        try {
+            localStorage.setItem('wardex-nick', nick);
+            localStorage.setItem('wardex-promo', promo);
+        } catch (err) { /* storage disabled */ }
+
+        window.open(STORE_URL, '_blank', 'noopener');
+    }
+
     document.addEventListener('click', function (e) {
+        var buyBtn = e.target.closest('#cart-form button[onclick*="onBuy"], #cart button[onclick*="onBuy"]');
+        if (buyBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            showBuyModal();
+            return;
+        }
+        var buySubmit = e.target.closest('#buy-submit');
+        if (buySubmit) {
+            e.preventDefault();
+            e.stopPropagation();
+            submitBuy();
+            return;
+        }
         var addBtn = e.target.closest('[data-request="onAdd"]');
         if (addBtn) {
             e.preventDefault();
@@ -210,6 +295,17 @@
             if (window.jQuery) window.jQuery('.modal').modal('hide');
         }
     }, true);
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter') return;
+        if (!e.target || !e.target.closest || !e.target.closest('#modal-buy')) return;
+        e.preventDefault();
+        submitBuy();
+    });
+
+    document.addEventListener('input', function (e) {
+        if (e.target && e.target.closest && e.target.closest('#modal-buy')) hideBuyError();
+    });
 
     document.addEventListener('DOMContentLoaded', function () {
         render();
