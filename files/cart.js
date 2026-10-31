@@ -192,7 +192,6 @@
     }
 
     var BUY_MODAL_ID = 'modal-buy';
-    var STORE_URL = 'https://wardex-server.easydonate.ru/';
 
     function showBuyError(msg) {
         var box = document.getElementById('buy-error');
@@ -206,11 +205,76 @@
         if (box) box.classList.add('d-none');
     }
 
+    function resetBuyModal() {
+        var form = document.getElementById('buy-form');
+        var done = document.getElementById('buy-done');
+        var btn = document.getElementById('buy-submit');
+        var title = document.querySelector('#modal-buy .modal-title');
+        if (form) form.classList.remove('d-none');
+        if (done) done.classList.add('d-none');
+        if (title) title.textContent = '\u041e\u0444\u043e\u0440\u043c\u043b\u0435\u043d\u0438\u0435 \u0437\u0430\u043a\u0430\u0437\u0430';
+        if (btn) {
+            btn.removeAttribute('data-done');
+            var txt = btn.querySelector('.btn-inner-text');
+            if (txt) txt.textContent = '\u041a\u0443\u043f\u0438\u0442\u044c';
+        }
+        hideBuyError();
+    }
+
+    function showBuyDone(nick, promo) {
+        var form = document.getElementById('buy-form');
+        var done = document.getElementById('buy-done');
+        var btn = document.getElementById('buy-submit');
+        var title = document.querySelector('#modal-buy .modal-title');
+        if (!done) return;
+
+        var sumEl = document.getElementById('buy-done-sum');
+        var nickEl = document.getElementById('buy-done-nick');
+        var promoRow = document.getElementById('buy-done-promo-row');
+        var promoEl = document.getElementById('buy-done-promo');
+
+        if (sumEl) sumEl.textContent = fmt(total());
+        if (nickEl) nickEl.textContent = nick;
+        if (promoRow && promoEl) {
+            if (promo) {
+                promoEl.textContent = promo;
+                promoRow.classList.remove('d-none');
+            } else {
+                promoRow.classList.add('d-none');
+            }
+        }
+
+        if (form) form.classList.add('d-none');
+        done.classList.remove('d-none');
+        if (title) title.textContent = '\u0417\u0430\u043a\u0430\u0437 \u043e\u0444\u043e\u0440\u043c\u043b\u0435\u043d';
+        if (btn) {
+            btn.setAttribute('data-done', '1');
+            var txt = btn.querySelector('.btn-inner-text');
+            if (txt) txt.textContent = '\u0413\u043e\u0442\u043e\u0432\u043e';
+        }
+    }
+
+    function closeBuyModal() {
+        var buy = document.getElementById(BUY_MODAL_ID);
+        if (!buy) return;
+        if (window.jQuery) {
+            window.jQuery(buy).modal('hide');
+        } else {
+            buy.classList.remove('show');
+            buy.style.display = 'none';
+            buy.setAttribute('aria-hidden', 'true');
+            document.querySelectorAll('.modal-backdrop').forEach(function (b) { b.remove(); });
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+        }
+        resetBuyModal();
+    }
+
     function showBuyModal() {
         var buy = document.getElementById(BUY_MODAL_ID);
         var cartEl = document.getElementById('cart');
         if (!buy) return;
-        hideBuyError();
+        resetBuyModal();
 
         var nick = document.getElementById('buy-username');
         if (nick) {
@@ -259,7 +323,7 @@
             localStorage.setItem('wardex-promo', promo);
         } catch (err) { /* storage disabled */ }
 
-        window.open(STORE_URL, '_blank', 'noopener');
+        showBuyDone(nick, promo);
     }
 
     document.addEventListener('click', function (e) {
@@ -274,7 +338,13 @@
         if (buySubmit) {
             e.preventDefault();
             e.stopPropagation();
-            submitBuy();
+            if (buySubmit.getAttribute('data-done') === '1') {
+                closeBuyModal();
+                cart = {};
+                render();
+            } else {
+                submitBuy();
+            }
             return;
         }
         var addBtn = e.target.closest('[data-request="onAdd"]');
